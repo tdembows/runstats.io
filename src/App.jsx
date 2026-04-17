@@ -15,6 +15,7 @@ const THEME = {
     border: '#F0F0F0',
     background: '#FFFFFF',
     marker: '#3A3A3C',
+    link: '#2D9CDB',
   },
   spacing: {
     sm: '8px',
@@ -29,11 +30,23 @@ const THEME = {
 };
 
 // --- Mock Data ---
-// Extracted out so you can easily swap this object out in your parent components or tests.
 export const defaultMockStats = {
   weekly: { completed: 22.4, goal: 20 },
   monthly: { completed: 57, goal: 62 },
   yearly: { completed: 285, goal: 622 },
+  recentActivity: {
+    name: 'Morning Trail Run',
+    date: 'April 15, 2026',
+    distance: '5.2 miles',
+    averagePace: '8:45 /mi',
+  },
+  recentEvent: {
+    name: 'Spring City Half Marathon',
+    date: 'April 4, 2026',
+    distance: '13.1 miles',
+    averagePace: '8:10 /mi',
+    completionTime: '1:46:59',
+  }
 };
 
 // --- Utilities ---
@@ -121,8 +134,31 @@ const StatCard = ({ label, completed, goal, pacingPercent }) => {
   );
 };
 
+const SummaryCard = ({ title, details }) => (
+  <div style={styles.card}>
+    <div style={styles.cardHeader}>
+      <span style={styles.cardTitle}>{title}</span>
+    </div>
+    <div style={styles.summaryList}>
+      {details.map((item, index) => (
+        <div key={index} style={styles.summaryRow}>
+          <span style={styles.summaryLabel}>{item.label}</span>
+          <span style={styles.summaryValue}>
+            {item.url ? (
+              <a href={item.url} style={styles.link} target="_blank" rel="noopener noreferrer">
+                {item.value}
+              </a>
+            ) : (
+              item.value
+            )}
+          </span>
+        </div>
+      ))}
+    </div>
+  </div>
+);
+
 // --- Main Application ---
-// Refactored to accept `currentDate` and `stats` as props for easy mocking.
 export default function TrainingDashboard({ 
   currentDate = new Date(), 
   stats = defaultMockStats 
@@ -134,29 +170,63 @@ export default function TrainingDashboard({
       <div style={styles.container}>
         <header style={styles.header}>
           <h1 style={styles.headline}>Training Dashboard</h1>
-          <div style={styles.dateBadge}>
-            Current Pacing: {metrics.formattedDate}
-          </div>
         </header>
 
-        <StatCard 
-          label="Weekly" 
-          completed={stats.weekly.completed} 
-          goal={stats.weekly.goal} 
-          pacingPercent={metrics.weekly} 
-        />
-        <StatCard 
-          label="Monthly" 
-          completed={stats.monthly.completed} 
-          goal={stats.monthly.goal} 
-          pacingPercent={metrics.monthly} 
-        />
-        <StatCard 
-          label="Yearly" 
-          completed={stats.yearly.completed} 
-          goal={stats.yearly.goal} 
-          pacingPercent={metrics.yearly} 
-        />
+        <div style={styles.layoutWrapper}>
+          {/* Left Column: Pacing Goals */}
+          <div style={styles.column}>
+            <StatCard 
+              label="Weekly" 
+              completed={stats.weekly.completed} 
+              goal={stats.weekly.goal} 
+              pacingPercent={metrics.weekly} 
+            />
+            <StatCard 
+              label="Monthly" 
+              completed={stats.monthly.completed} 
+              goal={stats.monthly.goal} 
+              pacingPercent={metrics.monthly} 
+            />
+            <StatCard 
+              label="Yearly" 
+              completed={stats.yearly.completed} 
+              goal={stats.yearly.goal} 
+              pacingPercent={metrics.yearly} 
+            />
+          </div>
+
+          {/* Right Column: Recent Activity & Events */}
+          <div style={styles.column}>
+            <SummaryCard 
+              title="Most Recent Activity"
+              details={[
+                { label: 'Activity Name', value: stats.recentActivity.name },
+                { label: 'Date', value: stats.recentActivity.date },
+                { label: 'Total Distance', value: stats.recentActivity.distance },
+                { label: 'Average Pace', value: stats.recentActivity.averagePace },
+              ]}
+            />
+
+            <SummaryCard 
+              title="Most Recent Event"
+              details={[
+                { 
+                  label: 'Event Name', 
+                  value: stats.recentEvent.name, 
+                  url: 'https://parkrun.us' 
+                },
+                { label: 'Date', value: stats.recentEvent.date },
+                { label: 'Event Distance', value: stats.recentEvent.distance },
+                { label: 'Average Pace', value: stats.recentEvent.averagePace },
+                { label: 'Completion Time', value: stats.recentEvent.completionTime },
+              ]}
+            />
+          </div>
+        </div>
+
+        <footer style={styles.footnote}>
+          Current pacing calculated as of {metrics.formattedDate}
+        </footer>
       </div>
     </div>
   );
@@ -171,7 +241,7 @@ const styles = {
     fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
   },
   container: {
-    maxWidth: '480px',
+    maxWidth: '960px', // Widened to accommodate two columns
     margin: '0 auto',
   },
   header: {
@@ -179,21 +249,21 @@ const styles = {
     marginBottom: '32px',
   },
   headline: {
-    margin: '0 0 8px 0',
-    fontSize: '28px',
+    margin: '0',
+    fontSize: '32px',
     fontWeight: '800',
     color: THEME.colors.textPrimary,
     letterSpacing: '-0.5px',
   },
-  dateBadge: {
-    display: 'inline-block',
-    padding: '4px 12px',
-    backgroundColor: THEME.colors.background,
-    borderRadius: '8px',
-    fontSize: '13px',
-    color: THEME.colors.textSecondary,
-    fontWeight: '600',
-    boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+  layoutWrapper: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: '24px',
+  },
+  column: {
+    flex: '1 1 340px', // Will share space equally, but wrap if container shrinks below ~700px
+    display: 'flex',
+    flexDirection: 'column',
   },
   card: {
     backgroundColor: THEME.colors.background,
@@ -256,4 +326,35 @@ const styles = {
     borderRadius: '50%',
     backgroundColor: THEME.colors.marker,
   },
+  summaryList: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '12px',
+  },
+  summaryRow: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  summaryLabel: {
+    fontSize: '14px',
+    color: THEME.colors.textSecondary,
+  },
+  summaryValue: {
+    fontSize: '14px',
+    fontWeight: '600',
+    color: THEME.colors.textPrimary,
+    textAlign: 'right',
+  },
+  link: {
+    color: THEME.colors.link,
+    textDecoration: 'none',
+  },
+  footnote: {
+    textAlign: 'center',
+    fontSize: '13px',
+    color: THEME.colors.textSecondary,
+    marginTop: '32px',
+    paddingBottom: '20px',
+  }
 };
