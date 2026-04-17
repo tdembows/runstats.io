@@ -199,11 +199,11 @@ const styles = {
     fontSize: '13px',
     color: THEME.colors.textSecondary,
     fontWeight: '500',
-    marginTop: '4px'
+    marginTop: '12px', // Increased margin for better readability
   },
   progressContainer: {
     position: 'relative',
-    marginBottom: THEME.spacing.sm,
+    marginBottom: '4px', // Slight margin to prevent dot from touching text
   },
   progressTrack: {
     width: '100%',
