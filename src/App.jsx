@@ -30,10 +30,18 @@ const THEME = {
 };
 
 // --- Mock Data ---
+// Decoupled Goals and Actuals for better data scalability
 export const defaultMockStats = {
-  weekly: { completed: 22.4, goal: 20 },
-  monthly: { completed: 57, goal: 62 },
-  yearly: { completed: 285, goal: 622 },
+  goals: {
+    weekly: 20,
+    monthly: 62,
+    yearly: 622,
+  },
+  actuals: {
+    weekly: 22.4,
+    monthly: 57,
+    yearly: 285,
+  },
   recentActivity: {
     name: 'Morning Trail Run',
     date: 'April 15, 2026',
@@ -88,7 +96,6 @@ const ProgressBar = ({ completionPercent, pacingPercent, isOnTrack }) => (
         background: isOnTrack ? THEME.colors.onTrack : THEME.colors.behind,
       }} />
     </div>
-
     <div style={{ ...styles.targetMarker, left: `${pacingPercent}%` }}>
        <div style={styles.targetDot} />
     </div>
@@ -97,7 +104,6 @@ const ProgressBar = ({ completionPercent, pacingPercent, isOnTrack }) => (
 
 const StatCard = ({ label, completed, goal, pacingPercent }) => {
   const completionPercent = (completed / goal) * 100;
-  
   const targetMiles = (goal * pacingPercent) / 100;
   const milesDiff = completed - targetMiles;
   const isOnTrack = completed >= targetMiles;
@@ -173,29 +179,29 @@ export default function TrainingDashboard({
         </header>
 
         <div style={styles.layoutWrapper}>
-          {/* Left Column: Pacing Goals */}
+          {/* Left Column: Pacing Goals (Actuals vs Goals) */}
           <div style={styles.column}>
             <StatCard 
               label="Weekly" 
-              completed={stats.weekly.completed} 
-              goal={stats.weekly.goal} 
+              completed={stats.actuals.weekly} 
+              goal={stats.goals.weekly} 
               pacingPercent={metrics.weekly} 
             />
             <StatCard 
               label="Monthly" 
-              completed={stats.monthly.completed} 
-              goal={stats.monthly.goal} 
+              completed={stats.actuals.monthly} 
+              goal={stats.goals.monthly} 
               pacingPercent={metrics.monthly} 
             />
             <StatCard 
               label="Yearly" 
-              completed={stats.yearly.completed} 
-              goal={stats.yearly.goal} 
+              completed={stats.actuals.yearly} 
+              goal={stats.goals.yearly} 
               pacingPercent={metrics.yearly} 
             />
           </div>
 
-          {/* Right Column: Recent Activity & Events */}
+          {/* Right Column: Summaries */}
           <div style={styles.column}>
             <SummaryCard 
               title="Most Recent Activity"
@@ -241,7 +247,7 @@ const styles = {
     fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
   },
   container: {
-    maxWidth: '960px', // Widened to accommodate two columns
+    maxWidth: '960px',
     margin: '0 auto',
   },
   header: {
@@ -261,7 +267,7 @@ const styles = {
     gap: '24px',
   },
   column: {
-    flex: '1 1 340px', // Will share space equally, but wrap if container shrinks below ~700px
+    flex: '1 1 340px',
     display: 'flex',
     flexDirection: 'column',
   },
@@ -349,6 +355,7 @@ const styles = {
   link: {
     color: THEME.colors.link,
     textDecoration: 'none',
+    fontWeight: '700',
   },
   footnote: {
     textAlign: 'center',
