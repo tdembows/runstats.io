@@ -28,6 +28,14 @@ const THEME = {
   }
 };
 
+// --- Mock Data ---
+// Extracted out so you can easily swap this object out in your parent components or tests.
+export const defaultMockStats = {
+  weekly: { completed: 22.4, goal: 20 },
+  monthly: { completed: 57, goal: 62 },
+  yearly: { completed: 285, goal: 622 },
+};
+
 // --- Utilities ---
 const getPacingMetrics = (date = new Date()) => {
   const dayOfWeek = date.getDay() === 0 ? 7 : date.getDay();
@@ -45,7 +53,6 @@ const getPacingMetrics = (date = new Date()) => {
 };
 
 // --- Sub-components ---
-
 const StatusPill = ({ percent, isOnTrack }) => (
   <div style={{
     backgroundColor: isOnTrack ? THEME.colors.statusGreen : THEME.colors.statusRed,
@@ -76,15 +83,12 @@ const ProgressBar = ({ completionPercent, pacingPercent, isOnTrack }) => (
 );
 
 const StatCard = ({ label, completed, goal, pacingPercent }) => {
-  // Logic Calculations
   const completionPercent = (completed / goal) * 100;
   
-  // Calculate Target Miles based on time elapsed in period
   const targetMiles = (goal * pacingPercent) / 100;
   const milesDiff = completed - targetMiles;
   const isOnTrack = completed >= targetMiles;
   
-  // Formatting
   const displayPercent = Math.round(completionPercent);
   const diffAbs = Math.abs(milesDiff).toFixed(1);
   const diffColor = isOnTrack ? THEME.colors.statusGreenText : THEME.colors.statusRedText;
@@ -118,10 +122,12 @@ const StatCard = ({ label, completed, goal, pacingPercent }) => {
 };
 
 // --- Main Application ---
-
-export default function TrainingDashboard() {
-  const now = new Date();
-  const metrics = useMemo(() => getPacingMetrics(now), [now.toDateString()]);
+// Refactored to accept `currentDate` and `stats` as props for easy mocking.
+export default function TrainingDashboard({ 
+  currentDate = new Date(), 
+  stats = defaultMockStats 
+}) {
+  const metrics = useMemo(() => getPacingMetrics(currentDate), [currentDate]);
 
   return (
     <div style={styles.appShell}>
@@ -133,9 +139,24 @@ export default function TrainingDashboard() {
           </div>
         </header>
 
-        <StatCard label="Weekly" completed={15} goal={20} pacingPercent={metrics.weekly} />
-        <StatCard label="Monthly" completed={50} goal={60} pacingPercent={metrics.monthly} />
-        <StatCard label="Yearly" completed={120} goal={600} pacingPercent={metrics.yearly} />
+        <StatCard 
+          label="Weekly" 
+          completed={stats.weekly.completed} 
+          goal={stats.weekly.goal} 
+          pacingPercent={metrics.weekly} 
+        />
+        <StatCard 
+          label="Monthly" 
+          completed={stats.monthly.completed} 
+          goal={stats.monthly.goal} 
+          pacingPercent={metrics.monthly} 
+        />
+        <StatCard 
+          label="Yearly" 
+          completed={stats.yearly.completed} 
+          goal={stats.yearly.goal} 
+          pacingPercent={metrics.yearly} 
+        />
       </div>
     </div>
   );
@@ -199,11 +220,11 @@ const styles = {
     fontSize: '13px',
     color: THEME.colors.textSecondary,
     fontWeight: '500',
-    marginTop: '12px', // Increased margin for better readability
+    marginTop: '12px',
   },
   progressContainer: {
     position: 'relative',
-    marginBottom: '4px', // Slight margin to prevent dot from touching text
+    marginBottom: '4px',
   },
   progressTrack: {
     width: '100%',
