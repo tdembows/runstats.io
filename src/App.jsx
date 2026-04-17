@@ -55,7 +55,7 @@ const StatusPill = ({ percent, isOnTrack }) => (
     fontSize: '13px',
     fontWeight: '700',
   }}>
-    {percent}% {isOnTrack ? '(On Track)' : '(Behind)'}
+    {percent}% {isOnTrack ? 'Done' : 'Behind'}
   </div>
 );
 
@@ -69,7 +69,6 @@ const ProgressBar = ({ completionPercent, pacingPercent, isOnTrack }) => (
       }} />
     </div>
 
-    {/* Target Marker */}
     <div style={{ ...styles.targetMarker, left: `${pacingPercent}%` }}>
        <div style={styles.targetDot} />
     </div>
@@ -77,9 +76,18 @@ const ProgressBar = ({ completionPercent, pacingPercent, isOnTrack }) => (
 );
 
 const StatCard = ({ label, completed, goal, pacingPercent }) => {
+  // Logic Calculations
   const completionPercent = (completed / goal) * 100;
-  const isOnTrack = completionPercent >= pacingPercent;
+  
+  // Calculate Target Miles based on time elapsed in period
+  const targetMiles = (goal * pacingPercent) / 100;
+  const milesDiff = completed - targetMiles;
+  const isOnTrack = completed >= targetMiles;
+  
+  // Formatting
   const displayPercent = Math.round(completionPercent);
+  const diffAbs = Math.abs(milesDiff).toFixed(1);
+  const diffColor = isOnTrack ? THEME.colors.statusGreenText : THEME.colors.statusRedText;
 
   return (
     <div style={styles.card}>
@@ -97,7 +105,13 @@ const StatCard = ({ label, completed, goal, pacingPercent }) => {
       />
 
       <div style={styles.cardFooter}>
-        <span>Target for today: {Math.round(pacingPercent)}%</span>
+        <span>
+          Target for today: <strong>{targetMiles.toFixed(1)} miles</strong>
+          {' '}
+          <span style={{ color: diffColor, fontWeight: '700' }}>
+            ({diffAbs} miles {isOnTrack ? 'ahead' : 'behind'})
+          </span>
+        </span>
       </div>
     </div>
   );
@@ -115,7 +129,7 @@ export default function TrainingDashboard() {
         <header style={styles.header}>
           <h1 style={styles.headline}>Training Dashboard</h1>
           <div style={styles.dateBadge}>
-            Pacing: {metrics.formattedDate}
+            Current Pacing: {metrics.formattedDate}
           </div>
         </header>
 
@@ -127,8 +141,7 @@ export default function TrainingDashboard() {
   );
 }
 
-// --- Styles Object ---
-// Separating styles keeps the JSX declarative and clean.
+// --- Styles ---
 const styles = {
   appShell: {
     backgroundColor: '#F2F2F7',
@@ -183,9 +196,10 @@ const styles = {
   cardFooter: {
     display: 'flex',
     justifyContent: 'flex-end',
-    fontSize: '12px',
+    fontSize: '13px',
     color: THEME.colors.textSecondary,
     fontWeight: '500',
+    marginTop: '4px'
   },
   progressContainer: {
     position: 'relative',
