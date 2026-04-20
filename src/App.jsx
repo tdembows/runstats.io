@@ -38,22 +38,22 @@ export const defaultMockStats = {
     yearly: 622,
   },
   actuals: {
-    weekly: 22.4,
-    monthly: 57,
-    yearly: 285,
+    weekly: 0,
+    monthly: 61,
+    yearly: 289,
   },
   recentActivity: {
-    name: 'Morning Trail Run',
-    date: 'April 15, 2026',
-    distance: '5.2 miles',
-    averagePace: '8:45 /mi',
+    name: 'Veterans Park parkrun #81',
+    date: 'April 18, 2026',
+    distance: '3.1 miles',
+    averagePace: '7:25 /mi',
   },
   recentEvent: {
-    name: 'Spring City Half Marathon',
-    date: 'April 4, 2026',
-    distance: '13.1 miles',
-    averagePace: '8:10 /mi',
-    completionTime: '1:46:59',
+    name: 'Veterans Park parkrun #81',
+    date: 'April 18, 2026',
+    distance: '3.1 miles',
+    averagePace: '7:25 /mi',
+    completionTime: '23:07',
   }
 };
 
@@ -219,7 +219,7 @@ export default function TrainingDashboard({
                 { 
                   label: 'Event Name', 
                   value: stats.recentEvent.name, 
-                  url: 'https://parkrun.us' 
+                  url: 'https://www.parkrun.us/veteranspark/results/81' 
                 },
                 { label: 'Date', value: stats.recentEvent.date },
                 { label: 'Event Distance', value: stats.recentEvent.distance },
