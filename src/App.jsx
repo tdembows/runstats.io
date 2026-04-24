@@ -29,33 +29,9 @@ const THEME = {
   }
 };
 
-// --- Mock Data ---
-// Decoupled Goals and Actuals for better data scalability
-export const defaultMockStats = {
-  goals: {
-    weekly: 20,
-    monthly: 62,
-    yearly: 622,
-  },
-  actuals: {
-    weekly: 0,
-    monthly: 61,
-    yearly: 289,
-  },
-  recentActivity: {
-    name: 'Veterans Park parkrun #81',
-    date: 'April 18, 2026',
-    distance: '3.1 miles',
-    averagePace: '7:25 /mi',
-  },
-  recentEvent: {
-    name: 'Veterans Park parkrun #81',
-    date: 'April 18, 2026',
-    distance: '3.1 miles',
-    averagePace: '7:25 /mi',
-    completionTime: '23:07',
-  }
-};
+// --- Data ---
+import data from './stats.json';
+export const defaultMockStats = data;
 
 // --- Utilities ---
 const getPacingMetrics = (date = new Date()) => {
@@ -165,9 +141,9 @@ const SummaryCard = ({ title, details }) => (
 );
 
 // --- Main Application ---
-export default function TrainingDashboard({ 
-  currentDate = new Date(), 
-  stats = defaultMockStats 
+export default function TrainingDashboard({
+  currentDate = new Date(),
+  stats = defaultMockStats
 }) {
   const metrics = useMemo(() => getPacingMetrics(currentDate), [currentDate]);
 
@@ -206,7 +182,6 @@ export default function TrainingDashboard({
             <SummaryCard 
               title="Most Recent Activity"
               details={[
-                { label: 'Activity Name', value: stats.recentActivity.name },
                 { label: 'Date', value: stats.recentActivity.date },
                 { label: 'Total Distance', value: stats.recentActivity.distance },
                 { label: 'Average Pace', value: stats.recentActivity.averagePace },
