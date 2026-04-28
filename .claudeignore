@@ -1,0 +1,18 @@
+# Dependencies
+node_modules/
+vendor/
+
+# Build outputs
+dist/
+build/
+.next/
+out/
+
+# Environment secrets
+.env
+.env.*
+
+# Large assets
+*.mp4
+*.png
+*.jpg

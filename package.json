@@ -4,6 +4,7 @@
   "description": "A simple React application",
   "private": true,
   "dependencies": {
+    "csv-parse": "^6.2.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
