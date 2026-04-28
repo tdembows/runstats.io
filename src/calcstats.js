@@ -130,3 +130,39 @@ if (result && result.length > 0) {
 
 // Output stats as JSON object
 console.log(JSON.stringify(stats, null, 2));
+
+const path = require('path');
+const statsFilePath = path.join(__dirname, 'stats.json');
+
+// Function to update the JSON file
+function updateStatsFile(newStats) {
+  try {
+    let existingData = {};
+
+    // 1. Read existing file if it exists
+    if (fs.existsSync(statsFilePath)) {
+      const fileContent = fs.readFileSync(statsFilePath, 'utf8');
+      existingData = JSON.parse(fileContent);
+    }
+
+    // 2. Update ONLY the actuals section
+    // We use .toFixed(1) and parseFloat to keep the numbers clean for the JSON
+    existingData.actuals = {
+      weekly: parseFloat(newStats.TotalWeeklyMiles.toFixed(1)),
+      monthly: parseFloat(newStats.TotalMonthlyMiles.toFixed(1)),
+      yearly: parseFloat(newStats.TotalYearlyMiles.toFixed(1))
+    };
+
+    // 3. Write the merged object back to stats.json
+    fs.writeFileSync(statsFilePath, JSON.stringify(existingData, null, 2), 'utf8');
+    console.log('Successfully updated stats.json');
+    
+  } catch (error) {
+    console.error('Error updating stats.json:', error.message);
+  }
+}
+
+// Execute the update
+if (result) {
+  updateStatsFile(stats);
+}
