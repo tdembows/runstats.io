@@ -188,14 +188,10 @@ export default function TrainingDashboard({
               ]}
             />
 
-            <SummaryCard 
+            <SummaryCard
               title="Most Recent Event"
               details={[
-                { 
-                  label: 'Event Name', 
-                  value: stats.recentEvent.name, 
-                  url: 'https://www.parkrun.us/veteranspark/results/81' 
-                },
+                { label: 'Event Name', value: stats.recentEvent.name, url: stats.recentEvent.url },
                 { label: 'Date', value: stats.recentEvent.date },
                 { label: 'Event Distance', value: stats.recentEvent.distance },
                 { label: 'Average Pace', value: stats.recentEvent.averagePace },
