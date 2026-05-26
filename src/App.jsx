@@ -30,8 +30,15 @@ const THEME = {
 };
 
 // --- Data ---
-import data from './stats.json';
-export const defaultMockStats = data;
+import goals from './data/goals.json' assert { type: 'json' };
+import actuals from './data/actuals.json' assert { type: 'json' };
+import activity from './data/activity.json' assert { type: 'json' };
+import event from './data/event.json' assert { type: 'json' };
+
+const defaultGoals = goals;
+const defaultActuals = actuals;
+const defaultActivity = activity;
+const defaultEvent = event;
 
 // --- Utilities ---
 const getPacingMetrics = (date = new Date()) => {
@@ -143,7 +150,10 @@ const SummaryCard = ({ title, details }) => (
 // --- Main Application ---
 export default function TrainingDashboard({
   currentDate = new Date(),
-  stats = defaultMockStats
+  goals = defaultGoals,
+  actuals = defaultActuals,
+  activity = defaultActivity,
+  event = defaultEvent,
 }) {
   const metrics = useMemo(() => getPacingMetrics(currentDate), [currentDate]);
 
@@ -157,45 +167,45 @@ export default function TrainingDashboard({
         <div style={styles.layoutWrapper}>
           {/* Left Column: Pacing Goals (Actuals vs Goals) */}
           <div style={styles.column}>
-            <StatCard 
-              label="Weekly" 
-              completed={stats.actuals.weekly} 
-              goal={stats.goals.weekly} 
-              pacingPercent={metrics.weekly} 
+            <StatCard
+              label="Weekly"
+              completed={actuals.weekly}
+              goal={goals.weekly}
+              pacingPercent={metrics.weekly}
             />
-            <StatCard 
-              label="Monthly" 
-              completed={stats.actuals.monthly} 
-              goal={stats.goals.monthly} 
-              pacingPercent={metrics.monthly} 
+            <StatCard
+              label="Monthly"
+              completed={actuals.monthly}
+              goal={goals.monthly}
+              pacingPercent={metrics.monthly}
             />
-            <StatCard 
-              label="Yearly" 
-              completed={stats.actuals.yearly} 
-              goal={stats.goals.yearly} 
-              pacingPercent={metrics.yearly} 
+            <StatCard
+              label="Yearly"
+              completed={actuals.yearly}
+              goal={goals.yearly}
+              pacingPercent={metrics.yearly}
             />
           </div>
 
           {/* Right Column: Summaries */}
           <div style={styles.column}>
-            <SummaryCard 
+            <SummaryCard
               title="Most Recent Activity"
               details={[
-                { label: 'Date', value: stats.recentActivity.date },
-                { label: 'Total Distance', value: stats.recentActivity.distance },
-                { label: 'Average Pace', value: stats.recentActivity.averagePace },
+                { label: 'Date', value: defaultActivity.recentActivity.date },
+                { label: 'Total Distance', value: defaultActivity.recentActivity.distance },
+                { label: 'Average Pace', value: defaultActivity.recentActivity.averagePace },
               ]}
             />
 
             <SummaryCard
               title="Most Recent Event"
               details={[
-                { label: 'Event Name', value: stats.recentEvent.name, url: stats.recentEvent.url },
-                { label: 'Date', value: stats.recentEvent.date },
-                { label: 'Event Distance', value: stats.recentEvent.distance },
-                { label: 'Average Pace', value: stats.recentEvent.averagePace },
-                { label: 'Completion Time', value: stats.recentEvent.completionTime },
+                { label: 'Event Name', value: defaultEvent.recentEvent.name, url: defaultEvent.recentEvent.url },
+                { label: 'Date', value: defaultEvent.recentEvent.date },
+                { label: 'Event Distance', value: defaultEvent.recentEvent.distance },
+                { label: 'Average Pace', value: defaultEvent.recentEvent.averagePace },
+                { label: 'Completion Time', value: defaultEvent.recentEvent.completionTime },
               ]}
             />
           </div>
