@@ -1,4 +1,5 @@
 const fs = require('fs');
+const path = require('path');
 
 // Helper: Calculate standard ISO week number reliably
 function getWeekNumber(d) {
@@ -7,35 +8,6 @@ function getWeekNumber(d) {
   date.setUTCDate(date.getUTCDate() + 4 - dayNum);
   const yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
   return Math.ceil((((date - yearStart) / 86400000) + 1) / 7);
-}
-
-// Simple CSV parser that handles quoted fields
-function parseCSV(line) {
-  const result = [];
-  let current = '';
-  let inQuotes = false;
-
-  for (let i = 0; i < line.length; i++) {
-    const char = line[i];
-
-    if (char === '"') {
-      if (inQuotes && line[i + 1] === '"') {
-        // Escaped quote inside quoted field
-        current += '"';
-        i++;
-      } else {
-        inQuotes = !inQuotes;
-      }
-    } else if (char === ',' && !inQuotes) {
-      result.push(current);
-      current = '';
-    } else {
-      current += char;
-    }
-  }
-
-  result.push(current);
-  return result;
 }
 
 function parseActivities(filePath) {
@@ -52,7 +24,7 @@ function parseActivities(filePath) {
       const line = lines[i].trim();
       if (!line) continue;
 
-      const values = parseCSV(line);
+      const values = line.split(',');
 
       // Ensure line has enough columns
       if (values.length > distanceIdx) {
@@ -76,11 +48,10 @@ function parseActivities(filePath) {
   }
 }
 
-// Make sure to point this to your actual file path
-const result = parseActivities('/Users/tdembows/Documents/GitHub/runstats.io/activities.csv');
+// Parse activities and generate goals
+const result = parseActivities('activities.csv');
 
-// Using Objects {} instead of Arrays [] prevents sparse/null data in the JSON
-const stats = {
+const defaultGoals = {
   WeeklyMiles: {},
   MonthlyMiles: {},
   YearlyMiles: {},
@@ -109,60 +80,29 @@ if (result && result.length > 0) {
     const monthKey = `${activityYear}-${String(activityMonth).padStart(2, '0')}`;
     const weekKey = `${activityYear}-W${String(activityWeek).padStart(2, '0')}`;
 
-    stats.YearlyMiles[yearKey] = (stats.YearlyMiles[yearKey] || 0) + distance;
-    stats.MonthlyMiles[monthKey] = (stats.MonthlyMiles[monthKey] || 0) + distance;
-    stats.WeeklyMiles[weekKey] = (stats.WeeklyMiles[weekKey] || 0) + distance;
+    defaultGoals.YearlyMiles[yearKey] = (defaultGoals.YearlyMiles[yearKey] || 0) + distance;
+    defaultGoals.MonthlyMiles[monthKey] = (defaultGoals.MonthlyMiles[monthKey] || 0) + distance;
+    defaultGoals.WeeklyMiles[weekKey] = (defaultGoals.WeeklyMiles[weekKey] || 0) + distance;
 
     // 2. Current Period Totals (The primary bug fix)
     if (activityYear === currentYear) {
-      stats.TotalYearlyMiles += distance;
+      defaultGoals.TotalYearlyMiles += distance;
 
       if (activityMonth === currentMonth) {
-        stats.TotalMonthlyMiles += distance;
+        defaultGoals.TotalMonthlyMiles += distance;
       }
 
       if (activityWeek === currentWeek) {
-        stats.TotalWeeklyMiles += distance;
+        defaultGoals.TotalWeeklyMiles += distance;
       }
     }
   }
 }
 
 // Output stats as JSON object
-console.log(JSON.stringify(stats, null, 2));
+console.log(JSON.stringify(defaultGoals, null, 2));
 
-const path = require('path');
-const statsFilePath = path.join(__dirname, 'stats.json');
-
-// Function to update the JSON file
-function updateStatsFile(newStats) {
-  try {
-    let existingData = {};
-
-    // 1. Read existing file if it exists
-    if (fs.existsSync(statsFilePath)) {
-      const fileContent = fs.readFileSync(statsFilePath, 'utf8');
-      existingData = JSON.parse(fileContent);
-    }
-
-    // 2. Update ONLY the actuals section
-    // We use .toFixed(1) and parseFloat to keep the numbers clean for the JSON
-    existingData.actuals = {
-      weekly: parseFloat(newStats.TotalWeeklyMiles.toFixed(1)),
-      monthly: parseFloat(newStats.TotalMonthlyMiles.toFixed(1)),
-      yearly: parseFloat(newStats.TotalYearlyMiles.toFixed(1))
-    };
-
-    // 3. Write the merged object back to stats.json
-    fs.writeFileSync(statsFilePath, JSON.stringify(existingData, null, 2), 'utf8');
-    console.log('Successfully updated stats.json');
-    
-  } catch (error) {
-    console.error('Error updating stats.json:', error.message);
-  }
-}
-
-// Execute the update
-if (result) {
-  updateStatsFile(stats);
-}
+// Update goals.json file
+const goalsPath = path.join(__dirname, 'goals.json');
+fs.writeFileSync(goalsPath, JSON.stringify(defaultGoals, null, 2), 'utf8');
+console.log('Successfully updated goals.json');

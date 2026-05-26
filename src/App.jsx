@@ -32,13 +32,13 @@ const THEME = {
 // --- Data ---
 import goals from './data/goals.json' assert { type: 'json' };
 import actuals from './data/actuals.json' assert { type: 'json' };
-import activity from './data/activity.json' assert { type: 'json' };
-import event from './data/event.json' assert { type: 'json' };
+import recentActivity from './data/recentActivity.json' assert { type: 'json' };
+import recentEvent from './data/recentEvent.json' assert { type: 'json' };
 
 const defaultGoals = goals;
 const defaultActuals = actuals;
-const defaultActivity = activity;
-const defaultEvent = event;
+const defaultRecentActivity = recentActivity;
+const defaultRecentEvent = recentEvent;
 
 // --- Utilities ---
 const getPacingMetrics = (date = new Date()) => {
@@ -152,8 +152,8 @@ export default function TrainingDashboard({
   currentDate = new Date(),
   goals = defaultGoals,
   actuals = defaultActuals,
-  activity = defaultActivity,
-  event = defaultEvent,
+  activity = defaultRecentActivity,
+  event = defaultRecentEvent,
 }) {
   const metrics = useMemo(() => getPacingMetrics(currentDate), [currentDate]);
 
@@ -192,20 +192,20 @@ export default function TrainingDashboard({
             <SummaryCard
               title="Most Recent Activity"
               details={[
-                { label: 'Date', value: defaultActivity.recentActivity.date },
-                { label: 'Total Distance', value: defaultActivity.recentActivity.distance },
-                { label: 'Average Pace', value: defaultActivity.recentActivity.averagePace },
+                { label: 'Date', value: defaultRecentActivity.date },
+                { label: 'Total Distance', value: defaultRecentActivity.distance },
+                { label: 'Average Pace', value: defaultRecentActivity.averagePace },
               ]}
             />
 
             <SummaryCard
               title="Most Recent Event"
               details={[
-                { label: 'Event Name', value: defaultEvent.recentEvent.name, url: defaultEvent.recentEvent.url },
-                { label: 'Date', value: defaultEvent.recentEvent.date },
-                { label: 'Event Distance', value: defaultEvent.recentEvent.distance },
-                { label: 'Average Pace', value: defaultEvent.recentEvent.averagePace },
-                { label: 'Completion Time', value: defaultEvent.recentEvent.completionTime },
+                { label: 'Event Name', value: defaultRecentEvent.name, url: defaultRecentEvent.url },
+                { label: 'Date', value: defaultRecentEvent.date },
+                { label: 'Event Distance', value: defaultRecentEvent.distance },
+                { label: 'Average Pace', value: defaultRecentEvent.averagePace },
+                { label: 'Completion Time', value: defaultRecentEvent.completionTime },
               ]}
             />
           </div>
