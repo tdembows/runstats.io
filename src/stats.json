@@ -6,20 +6,20 @@
   },
   "actuals": {
     "weekly": 6.2,
-    "monthly": 90,
-    "yearly": 317.6
+    "monthly": 75,
+    "yearly": 404
   },
   "recentActivity": {
-    "date": "April 27, 2026",
+    "date": "May 25, 2026",
     "distance": "6.2 miles",
-    "averagePace": "8:50 /mi"
+    "averagePace": "9:04 /mi"
   },
   "recentEvent": {
-    "name": "Veterans Park parkrun #82",
-    "date": "April 15, 2026",
+    "name": "Veterans Park parkrun #83",
+    "date": "May 2, 2026",
     "distance": "3.1 miles",
-    "averagePace": "7:18 /mi",
-    "completionTime": "22:46",
-    "url": "https://www.parkrun.us/veteranspark/results/82"
+    "averagePace": "7:13 /mi",
+    "completionTime": "22:26",
+    "url": "https://www.parkrun.us/veteranspark/results/83"
   }
 }
