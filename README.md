@@ -1,6 +1,12 @@
 # runstats.io
 
-A personal training dashboard for tracking running progress with goal pacing and activity summaries.
+A personal training dashboard built by a DevOps engineer as a self-learning project using Ollama, Claude, and the qwen3.5:4b model.
+
+## About
+
+I'm a DevOps engineer who took this on as a personal project to build something motivating to track running progress. It's a simple dashboard with calculations to help motivate running through the weeks, months, and years.
+
+One day this may include an integration to pull data locally via GPX/FIT files with a SQLite database, but for now it's just a nice dashboard with visualizations to help track goal completion across different time periods.
 
 ## Overview
 
