@@ -1,5 +1,12 @@
 import React, { useMemo } from 'react';
 
+// --- Data Imports ---
+import defaultGoals from './data/goals.json' with { type: 'json' };
+import defaultActuals from './data/actuals.json' with { type: 'json' };
+import defaultActivity from './data/recentActivity.json' with { type: 'json' };
+import defaultEvent from './data/recentEvent.json' with { type: 'json' };
+import defaultRecords from './data/records.json' with { type: 'json' };
+
 // --- Constants & Configuration ---
 const THEME = {
   colors: {
@@ -14,6 +21,7 @@ const THEME = {
     textSecondary: '#8E8E93',
     border: '#F0F0F0',
     background: '#FFFFFF',
+    appBackground: '#F2F2F7',
     marker: '#3A3A3C',
     link: '#2D9CDB',
   },
@@ -28,18 +36,6 @@ const THEME = {
     bar: '11px',
   }
 };
-
-// --- Data ---
-import goals from './data/goals.json' assert { type: 'json' };
-import actuals from './data/actuals.json' assert { type: 'json' };
-import recentActivity from './data/recentActivity.json' assert { type: 'json' };
-import recentEvent from './data/recentEvent.json' assert { type: 'json' };
-import personalBests from './data/records.json' assert { type: 'json' };
-
-const defaultGoals = goals;
-const defaultActuals = actuals;
-const defaultRecentActivity = recentActivity;
-const defaultRecentEvent = recentEvent;
 
 // --- Utilities ---
 const getPacingMetrics = (date = new Date()) => {
@@ -60,12 +56,9 @@ const getPacingMetrics = (date = new Date()) => {
 // --- Sub-components ---
 const StatusPill = ({ percent, isOnTrack }) => (
   <div style={{
+    ...styles.statusPill,
     backgroundColor: isOnTrack ? THEME.colors.statusGreen : THEME.colors.statusRed,
     color: isOnTrack ? THEME.colors.statusGreenText : THEME.colors.statusRedText,
-    padding: '6px 14px',
-    borderRadius: THEME.borderRadius.pill,
-    fontSize: '13px',
-    fontWeight: '700',
   }}>
     {percent}% {isOnTrack ? 'Done' : 'Behind'}
   </div>
@@ -130,8 +123,8 @@ const SummaryCard = ({ title, details }) => (
       <span style={styles.cardTitle}>{title}</span>
     </div>
     <div style={styles.summaryList}>
-      {details.map((item, index) => (
-        <div key={index} style={styles.summaryRow}>
+      {details.map((item) => (
+        <div key={item.label} style={styles.summaryRow}>
           <span style={styles.summaryLabel}>{item.label}</span>
           <span style={styles.summaryValue}>
             {item.url ? (
@@ -148,31 +141,22 @@ const SummaryCard = ({ title, details }) => (
   </div>
 );
 
-const PersonalBestsCard = () => (
-  <div style={styles.card}>
-    <div style={styles.cardHeader}>
-      <span style={styles.cardTitle}>🏆 Personal Bests</span>
-    </div>
-    <div style={styles.summaryList}>
-      {Object.entries(personalBests).map(([dist, time]) => (
-        <div key={dist} style={styles.summaryRow}>
-          <span style={styles.summaryLabel}>{dist}</span>
-          <span style={styles.summaryValue}>{time}</span>
-        </div>
-      ))}
-    </div>
-  </div>
-);
-
 // --- Main Application ---
 export default function TrainingDashboard({
   currentDate = new Date(),
   goals = defaultGoals,
   actuals = defaultActuals,
-  activity = defaultRecentActivity,
-  event = defaultRecentEvent,
+  activity = defaultActivity,
+  event = defaultEvent,
+  records = defaultRecords,
 }) {
   const metrics = useMemo(() => getPacingMetrics(currentDate), [currentDate]);
+
+  // Transform records dynamic dictionary data for standard SummaryCard re-use
+  const personalBestsDetails = useMemo(() => 
+    Object.entries(records).map(([label, value]) => ({ label, value })), 
+    [records]
+  );
 
   return (
     <div style={styles.appShell}>
@@ -209,24 +193,27 @@ export default function TrainingDashboard({
             <SummaryCard
               title="🗺️ Most Recent Activity"
               details={[
-                { label: 'Date', value: defaultRecentActivity.date },
-                { label: 'Total Distance', value: defaultRecentActivity.distance },
-                { label: 'Average Pace', value: defaultRecentActivity.averagePace },
+                { label: 'Date', value: activity.date },
+                { label: 'Total Distance', value: activity.distance },
+                { label: 'Average Pace', value: activity.averagePace },
               ]}
             />
 
             <SummaryCard
               title="🏁 Most Recent Event"
               details={[
-                { label: 'Event Name', value: defaultRecentEvent.name, url: defaultRecentEvent.url },
-                { label: 'Date', value: defaultRecentEvent.date },
-                { label: 'Event Distance', value: defaultRecentEvent.distance },
-                { label: 'Average Pace', value: defaultRecentEvent.averagePace },
-                { label: 'Completion Time', value: defaultRecentEvent.completionTime },
+                { label: 'Event Name', value: event.name, url: event.url },
+                { label: 'Date', value: event.date },
+                { label: 'Event Distance', value: event.distance },
+                { label: 'Average Pace', value: event.averagePace },
+                { label: 'Completion Time', value: event.completionTime },
               ]}
             />
 
-            <PersonalBestsCard />
+            <SummaryCard
+              title="🏆 Personal Bests"
+              details={personalBestsDetails}
+            />
           </div>
         </div>
 
@@ -241,7 +228,7 @@ export default function TrainingDashboard({
 // --- Styles ---
 const styles = {
   appShell: {
-    backgroundColor: '#F2F2F7',
+    backgroundColor: THEME.colors.appBackground,
     minHeight: '100vh',
     padding: '40px 20px',
     fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
@@ -297,6 +284,12 @@ const styles = {
     color: THEME.colors.textSecondary,
     fontWeight: '500',
     marginTop: '12px',
+  },
+  statusPill: {
+    padding: '6px 14px',
+    borderRadius: THEME.borderRadius.pill,
+    fontSize: '13px',
+    fontWeight: '700',
   },
   progressContainer: {
     position: 'relative',
