@@ -34,6 +34,7 @@ import goals from './data/goals.json' assert { type: 'json' };
 import actuals from './data/actuals.json' assert { type: 'json' };
 import recentActivity from './data/recentActivity.json' assert { type: 'json' };
 import recentEvent from './data/recentEvent.json' assert { type: 'json' };
+import personalBests from './data/records.json' assert { type: 'json' };
 
 const defaultGoals = goals;
 const defaultActuals = actuals;
@@ -147,6 +148,22 @@ const SummaryCard = ({ title, details }) => (
   </div>
 );
 
+const PersonalBestsCard = () => (
+  <div style={styles.card}>
+    <div style={styles.cardHeader}>
+      <span style={styles.cardTitle}>🏆 Personal Bests</span>
+    </div>
+    <div style={styles.summaryList}>
+      {Object.entries(personalBests).map(([dist, time]) => (
+        <div key={dist} style={styles.summaryRow}>
+          <span style={styles.summaryLabel}>{dist}</span>
+          <span style={styles.summaryValue}>{time}</span>
+        </div>
+      ))}
+    </div>
+  </div>
+);
+
 // --- Main Application ---
 export default function TrainingDashboard({
   currentDate = new Date(),
@@ -190,7 +207,7 @@ export default function TrainingDashboard({
           {/* Right Column: Summaries */}
           <div style={styles.column}>
             <SummaryCard
-              title="Most Recent Activity"
+              title="🗺️ Most Recent Activity"
               details={[
                 { label: 'Date', value: defaultRecentActivity.date },
                 { label: 'Total Distance', value: defaultRecentActivity.distance },
@@ -199,7 +216,7 @@ export default function TrainingDashboard({
             />
 
             <SummaryCard
-              title="Most Recent Event"
+              title="🏁 Most Recent Event"
               details={[
                 { label: 'Event Name', value: defaultRecentEvent.name, url: defaultRecentEvent.url },
                 { label: 'Date', value: defaultRecentEvent.date },
@@ -208,6 +225,8 @@ export default function TrainingDashboard({
                 { label: 'Completion Time', value: defaultRecentEvent.completionTime },
               ]}
             />
+
+            <PersonalBestsCard />
           </div>
         </div>
 
