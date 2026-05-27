@@ -4,7 +4,7 @@ set -e
 echo "Starting production build..."
 
 # Run production build
-npm run build
+npm run build -- --base=/runstats.io/
 
 # Verify build succeeded
 if [ ! -f "dist/index.html" ]; then
