@@ -152,9 +152,9 @@ export default function TrainingDashboard({
 }) {
   const metrics = useMemo(() => getPacingMetrics(currentDate), [currentDate]);
 
-  // Transform records dynamic dictionary data for standard SummaryCard re-use
-  const personalBestsDetails = useMemo(() => 
-    Object.entries(records).map(([label, value]) => ({ label, value })), 
+  // Transform records array data for standard SummaryCard re-use
+  const personalBestsDetails = useMemo(() =>
+    records.map((record) => ({ label: record.distance, value: record.time, url: record.link })),
     [records]
   );
 

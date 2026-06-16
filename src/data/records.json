@@ -1,5 +1,17 @@
-{
-  "5k": "21:42",
-  "10k": "47:54",
-  "Half Marathon": "1:57:49"
-}
+[
+  {
+    "distance": "parkrun",
+    "time": "22:26",
+    "link": "https://www.parkrun.us/veteranspark/results/83/"
+  },
+  {
+    "distance": "5k",
+    "time": "21:39",
+    "link": "https://results.nyrr.org/runner/27690/result/23VGRD"
+  },
+  {
+    "distance": "Half Marathon",
+    "time": "1:57:36",
+    "link": "https://results.nyrr.org/runner/131380/result/23VNYCH"
+  }
+]
